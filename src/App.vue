@@ -8,7 +8,7 @@
 
       <JobForm />
 
-      <Table2 />
+<!--      <Table2 />-->
 
       <!-- <Pagination /> -->
 
@@ -27,8 +27,8 @@ export default {
   name: "App",
   components: {
     Navbar,
-    Table,
-    Table2,
+    // Table,
+    // Table2,
     JobForm
 },
 
