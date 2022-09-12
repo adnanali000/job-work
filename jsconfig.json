@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "Indicators/*": [".src/overlays/indicators/*"],
+      "ChartTypes/*": [".src/overlays/chartTypes/*"],
+      "Tools/*": [".src/overlays/tools/*"],
+      "Utils/*": [".src/overlays/tools/*"]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  }
+}
