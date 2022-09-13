@@ -1,6 +1,7 @@
 <template>
   <div>
     <Navbar />
+    <div class="mt-6">
 
     <!-- <Table /> -->
     <div class="mt-16">
@@ -19,9 +20,6 @@
 
 <script>
 import Navbar from './components/Navbar.vue'
-import Table from './components/Table.vue'
-import Table2 from './components/table2.vue'
-import JobForm from './components/JobForm.vue';
 
 export default {
   name: "App",

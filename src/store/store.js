@@ -138,6 +138,13 @@ export const store = new Vuex.Store({
                 },
               },
           ],
+
+
+          jobData: []
+
+
+
+
     },
 
     mutations:{
@@ -147,7 +154,15 @@ export const store = new Vuex.Store({
         }
     },
 
+    actions:{
+      setJob(context,payload){
+        this.state.jobData = payload
+      }
+    },
+
     getters:{
-        tableData: state => state.tableData
+        tableData: state => state.tableData,
+
+        jobData: state => state.jobData
     }
 })

@@ -132,7 +132,13 @@
           />
         </div>
       </div>
-      <div class="md:flex md:items-center mb-6">
+
+      <validation
+        v-bind:errormessage="error.jobTime.message"
+        v-bind:show="error.jobTime.status"
+      />
+
+      <div class="md:flex md:items-center mb-4">
         <div class="md:w-1/3">
           <label
             class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
@@ -143,12 +149,15 @@
         </div>
         <div class="relative md:w-2/3">
           <select
+            v-model="jobConfig.jobType"
                   v-model="jobConfig.jobType"
             class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-green-500"
             id="jobType"
           >
             <option>Choose Job</option>
-            <option v-for="(job, i) of jobs" :key="i" :value="job.id">{{ job.desc }}</option>
+            <option v-for="(job, i) of jobs" :key="i" :value="job.id" :value="job.id">
+              {{ job.desc }}
+            </option>
           </select>
           <div
             class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
@@ -166,7 +175,12 @@
         </div>
       </div>
 
-      <div class="md:flex md:items-center mb-6">
+      <validation
+        v-bind:errormessage="error.jobType.message"
+        v-bind:show="error.jobType.status"
+      />
+
+      <div class="md:flex md:items-center mb-4">
         <div class="md:w-1/3">
           <label
             class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
@@ -183,7 +197,11 @@
             id="marketId"
           >
             <option>Choose Code</option>
-            <option v-for="(market, i) of marketsData" :key="i" :value="market.code">
+            <option
+              v-for="(market, i) of marketsData"
+              :key="i"
+              :value="market.code"
+            >
               {{ market.desc }}
             </option>
           </select>
@@ -249,6 +267,9 @@
   import marketsData from "@/config/marketData"
   const apiUrl = 'http://139.180.181.26:9090/api/v1';
 export default {
+  components: {
+    validation,
+  },
   data() {
 
     return {
