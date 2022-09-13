@@ -172,10 +172,10 @@
           }
           if(val.occurrence === "D"){
             console.log(moment.utc(val.jobTime).format('hh:mm'))
-            return curobj ? curobj.desc + " at 15:45" : '' 
+            return curobj ? curobj.desc + " at " + moment.utc(val.jobTime).format('hh:mm') : '' 
           }
           if(val.occurrence === "M"){
-            return "Monthly on " + month.desc + " at 15:00"
+            return curobj ? "Monthly on " + month.desc + " at " +  moment.utc(val.jobTime).format('hh:mm') : ''
           }
 
         }

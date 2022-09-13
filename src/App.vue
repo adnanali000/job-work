@@ -25,8 +25,6 @@ export default {
   name: "App",
   components: {
     Navbar,
-    // Table,
-    // Table2,
     JobForm
 },
 
