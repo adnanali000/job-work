@@ -159,6 +159,7 @@
             class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500"
             id="inline-full-name"
             type="time"
+            step="900"
           />
         </div>
       </div>
@@ -300,6 +301,7 @@ import marketsData from "@/config/marketData";
 import validation from "./validation.vue";
 import {Config} from "./jobConfig"
 const apiUrl = "http://139.180.181.26:9090/api/v1";
+// const apiUrl = "http://192.168.0.101:5000/api/v1";
 export default {
   components: {
     validation,
@@ -391,7 +393,7 @@ export default {
           },
           body: JSON.stringify(dataObj)
         });
-        const content = await rawResponse.json();
+         await rawResponse.json();
         
       }
     }
@@ -413,10 +415,11 @@ export default {
     marketIdComputed(n, o) {
       this.error.marketId.status = false;
       let marketSymbols = this.allSymbols.filter((d) => d.endsWith(n));
-      console.log(n, o, marketSymbols);
+      // console.log(n, o, marketSymbols);
       this.symbolList = marketSymbols.map((d) => {
+        // console.log(n)
         let symbolRef = d.split("~")[0];
-        return symbolRef.split(".")[0];
+        return n !== 'ASX' ? symbolRef.split(".")[0]: symbolRef;
       });
     },
     'jobConfig.jobType'(){

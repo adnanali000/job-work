@@ -1,4 +1,3 @@
-import Navbar from './components/Navbar'
 import JobForm from './components/JobForm'
 import JobTable from './components/jobTable'
 
