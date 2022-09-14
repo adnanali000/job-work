@@ -1,21 +1,9 @@
 <template>
   <div>
     <Navbar />
-    <div class="mt-6">
-
-    <!-- <Table /> -->
-    <div class="mt-16">
-
+    <div class="mt-4">
         <router-view></router-view>
-<!--      <JobForm />-->
-
-<!--      <Table2 />-->
-
-      <!-- <Pagination /> -->
-
     </div>
-
-  </div>
   </div>
 </template>
 

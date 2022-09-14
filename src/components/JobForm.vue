@@ -1,7 +1,7 @@
 <template>
-  <div class="h-[100vh]">
+  <div class="h-auto">
     <form
-      class="w-full max-w-sm mx-auto border border-solid py-10 px-6 shadow-md rounded-lg"
+      class="w-full max-w-sm mt-12 mx-auto border border-solid py-10 px-6 shadow-md rounded-lg"
     >
       <h2 class="text-gray-600 text-xl mb-1 font-medium title-font border-b-2">
         Job Form
@@ -299,7 +299,8 @@
 <script>
 import marketsData from "@/config/marketData";
 import validation from "./validation.vue";
-import {Config} from "./jobConfig"
+import { Config } from "./jobConfig";
+import moment from 'moment'
 const apiUrl = "http://139.180.181.26:9090/api/v1";
 // const apiUrl = "http://192.168.0.101:5000/api/v1";
 export default {
@@ -378,26 +379,33 @@ export default {
 
       if (isNotValid) {
         return;
-      }else{   
-        if(this.jobConfig.marketId && this.jobConfig.jobType){
-          let dataObj = this.jobConfig
+      } else {
+        if (this.jobConfig.marketId && this.jobConfig.jobType) {
+          let dataObj = this.jobConfig;
           dataObj.symbolList = "";
-        if(this.selectedSymbols.length){
-          dataObj.symbolList = this.selectedSymbols.join(";").concat(";")
+          if (this.selectedSymbols.length) {
+            dataObj.symbolList = this.selectedSymbols.join(";").concat(";");
+          }
+          console.log(dataObj.jobTime.split(':')[0])
+          let date = moment.utc();
+          date.set("hour", Number(dataObj.jobTime.split(':')[0]));
+          date.set("minute", Number(dataObj.jobTime.split(':')[1]));
+          let jobTime = date.format("hh:mm");
+          dataObj.jobTime = jobTime;
+          const rawResponse = await fetch(`${apiUrl}/admin/saveCustomJobs`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataObj),
+          });
+          let res = await rawResponse.json();
+          if (!res.isError) {
+            this.$router.go();
+          }
         }
-        const rawResponse = await fetch(`${apiUrl}/admin/saveCustomJobs`, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataObj)
-        });
-         await rawResponse.json();
-        
       }
-    }
-
     },
   },
 
@@ -415,31 +423,29 @@ export default {
     marketIdComputed(n, o) {
       this.error.marketId.status = false;
       let marketSymbols = this.allSymbols.filter((d) => d.endsWith(n));
-      // console.log(n, o, marketSymbols);
       this.symbolList = marketSymbols.map((d) => {
-        // console.log(n)
         let symbolRef = d.split("~")[0];
-        return n !== 'ASX' ? symbolRef.split(".")[0]: symbolRef;
+        return n !== "ASX" ? symbolRef.split(".")[0] : symbolRef;
       });
     },
-    'jobConfig.jobType'(){
+    "jobConfig.jobType"() {
       this.error.jobType.status = false;
     },
-    'jobConfig.occurrence'(){
+    "jobConfig.occurrence"() {
       this.error.occurrence.status = false;
     },
-    'jobConfig.weekDay'(){
+    "jobConfig.weekDay"() {
       this.error.weekDay.status = false;
     },
-    'jobConfig.monthDay'(){
+    "jobConfig.monthDay"() {
       this.error.monthDay.status = false;
     },
-    'jobConfig.marketId'(){
+    "jobConfig.marketId"() {
       this.error.marketId.status = false;
     },
-    'jobConfig.jobTime'(){
+    "jobConfig.jobTime"() {
       this.error.jobTime.status = false;
-    }
+    },
   },
 };
 </script>
