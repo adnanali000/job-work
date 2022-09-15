@@ -301,8 +301,11 @@ import marketsData from "@/config/marketData";
 import validation from "./validation.vue";
 import { Config } from "./jobConfig";
 import moment from 'moment'
-const apiUrl = "http://139.180.181.26:9090/api/v1";
-// const apiUrl = "http://192.168.0.101:5000/api/v1";
+import {serverApi} from '../api/jobapi' 
+
+const apiUrl = serverApi
+
+
 export default {
   components: {
     validation,
@@ -387,11 +390,20 @@ export default {
             dataObj.symbolList = this.selectedSymbols.join(";").concat(";");
           }
           console.log(dataObj.jobTime.split(':')[0])
-          let date = moment.utc();
+          let date = moment();
           date.set("hour", Number(dataObj.jobTime.split(':')[0]));
           date.set("minute", Number(dataObj.jobTime.split(':')[1]));
-          let jobTime = date.format("hh:mm");
+          date.set("seconds",0);
+          let jobTime = date.utc().unix();
+          console.log('jobTime',jobTime,date)
           dataObj.jobTime = jobTime;
+          
+          // console.log(moment().utcOffset() / 60);
+
+          // 2022-09-13T22:30:00Z
+
+          // console.log(new Date().getTimezoneOffset())
+        
           const rawResponse = await fetch(`${apiUrl}/admin/saveCustomJobs`, {
             method: "POST",
             headers: {

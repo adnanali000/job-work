@@ -28,7 +28,7 @@ export const store = new Vuex.Store({
 
       setDataJob(context,payload){
         this.state.datajoblog = payload
-        // console.log(this.state.datajoblog)
+        console.log(this.state.datajoblog)
       }
     },
 

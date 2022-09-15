@@ -6,8 +6,7 @@ export default {
         ...mapGetters(['jobData']),  
         filteredData: function() {
             return this.jobData.filter(data => {
-              return data.occurrence.match(this.search.toUpperCase()) 
-              // || data.marketId.match(this.search.toUpperCase());
+              return data.marketId.match(this.search.toUpperCase());
             });
           }
     }

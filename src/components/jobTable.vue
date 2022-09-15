@@ -15,8 +15,10 @@
         />
       </label>
     </div>
-    <div class="w-full mt-4">
-      <table
+
+    <div v-if="isResponse"> 
+      <div class="w-full mt-4">
+        <table
         class="w-[90%] mx-auto  text-center border-collapse border border-slate-400 .."
       >
         <thead>
@@ -40,23 +42,30 @@
               {{ data.jobType || 0 }}
             </td>
             <td class="text-red-600 border border-slate-300 p-2 ...">
-              {{ data.marketId || 0 }}
+              {{ displayMarketId(data.marketId) || 0 }}
             </td>
-            <!-- <td class="text-green-600 text-gray-500 border border-slate-300 p-2 ...">{{ data.occurrence || "null" }}</td> -->
             <td
               class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
             >
               {{ displayOccurrence(data) }}
             </td>
-
+            
             <td
               class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
             >
               {{ data.status }}
             </td>
-            <!-- <td class="text-red-600 border border-slate-300 p-2 ...">{{ data.weekDay || "null" }}</td>
-              <td class="text-green-600 border border-slate-300 p-2 ...">{{ data.monthDay || "null" }}</td>
-              <td class="text-red-600 border border-slate-300 p-2 ...">{{ data.symbolList || "null" }}</td> -->
+            <td
+              class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
+            >
+              {{ data.jobTime }}
+            </td>
+            <td
+              class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
+              >
+              {{ data.lastRunAt }}
+            </td>
+
             <td class="border border-slate-300 p-2 ...">
               <div class="flex flex-column justify-center items-center">
                 <button
@@ -90,8 +99,8 @@
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 ></path>
               </svg>
@@ -103,26 +112,26 @@
               @click="page = pageNumber"
               :key="i"
               class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            >
+              >
               {{ pageNumber }}
             </button>
           </li>
           <li>
             <button
-              @click="page++"
-              v-if="page < pages.length"
-              class="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            @click="page++"
+            v-if="page < pages.length"
+            class="block py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
-              <span class="sr-only">Next</span>
-              <svg
-                aria-hidden="true"
-                class="w-5 h-5"
+            <span class="sr-only">Next</span>
+            <svg
+            aria-hidden="true"
+            class="w-5 h-5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <path
-                  fill-rule="evenodd"
+              <path
+              fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd"
                 ></path>
@@ -133,6 +142,11 @@
       </nav>
     </div>
   </div>
+
+  <div v-else>
+    <Spinner />
+  </div>
+  </div>
 </template>
 
 <script>
@@ -140,17 +154,27 @@ import jobMixin from "../mixins/jobSearch";
 import { mapActions, mapGetters } from "vuex";
 import { Config } from "./jobConfig";
 import moment from "moment";
+import marketData from '../config/marketData'
+import {serverApi} from '../api/jobapi' 
+import Spinner from './spinner.vue'
 
-const apiUrl = "http://139.180.181.26:9090/api/v1";
+
+const apiUrl = serverApi
+
+
 export default {
+  components: {
+    Spinner,
+},
   data() {
     return {
       ...Config,
+      isResponse:false,
       search: "",
       page: 1,
       perPage: 5,
       pages: [],
-      columns: ["jobType", "marketId", "occurrence", "status","Action"],
+      columns: ["jobType", "marketId", "occurrence", "status","NextJob","LastJob","Action"],
     };
   },
 
@@ -190,6 +214,13 @@ export default {
           : "";
       }
     },
+
+    displayMarketId(val){
+      let mark_id = marketData.find((v) => v.code === val);
+       
+        return mark_id.desc
+
+        },
 
     async handleDelete(item) {
       await fetch(`${apiUrl}/admin/deleteJob:id?id=${item.id}`, { 
@@ -233,6 +264,7 @@ export default {
         .then((response) => response.json())
         .then((data) => this.setJob(data.data));
         this.setPages();
+        this.isResponse = true
     },
   },
 
