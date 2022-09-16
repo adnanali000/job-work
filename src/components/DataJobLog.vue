@@ -45,6 +45,7 @@
             <DataJobDetail
               :singleDataJob="singleDataJob"
               :logResult="logResult"
+              :columns="columnConfig"
             />
           </div>
         </div>
@@ -95,7 +96,7 @@
                 </td>
                 <td
                   class="text-red-600 border border-slate-300 p-2 cursor-pointer ..."
-                  @click="ViewJobDetail(data, 'candleUpdate')"
+                  @click="ViewJobDetail(data, 'candleUpdated')"
                 >
                   {{ data.logResults.candleUpdated.length || 0 }}
                 </td>
@@ -103,7 +104,7 @@
                   class="text-green-600 border border-slate-300 p-2 cursor-pointer ..."
                   @click="ViewJobDetail(data, 'failedRequest')"
                 >
-                  {{ data.logResults.failedRequest.toString() || 0 }}
+                  {{ data.logResults.failedRequest.length || 0 }}
                 </td>
                 <td
                   class="text-red-600 border border-slate-300 p-2 cursor-pointer ..."
@@ -113,7 +114,7 @@
                 </td>
                 <td
                   class="text-green-600 border border-slate-300 p-2 cursor-pointer ..."
-                  @click="ViewJobDetail(data, 'updateNotFound')"
+                  @click="ViewJobDetail(data, 'candleDataNotFoundFromApi')"
                 >
                   {{ data.logResults.candleDataNotFoundFromApi.length || 0 }}
                 </td>
@@ -233,6 +234,27 @@ export default {
       pages: [],
       singleDataJob: {},
       logResult: [],
+      columnConfig: {},
+      logColumnsConfig: {
+        candleUpdated: {
+          column:[
+            "Name",
+            "Candle Count",
+          ],
+          filter:'Name'
+        },failedRequest: {
+          column:[
+            "Name"
+          ],
+          filter:'string'
+        },
+        candleDataNotFoundFromApi:{
+          column:[
+            "Name"
+          ],
+          filter:'string'
+        }
+      },
       columns: [
         "Market Id",
         "Candle Update",
@@ -257,27 +279,16 @@ export default {
   methods: {
     ViewJobDetail(item, column) {
       this.isModal = true;
-      this.singleDataJob = this.datajoblog.find((x) => x.id == item.id);
+      this.singleDataJob = this.datajoblog.find((x) => x.id === item.id);
 
       if (this.singleDataJob) {
-        switch (column) {
-          case "candleUpdate":
-            this.logResult = this.singleDataJob.logResults.candleUpdated;
-            break;
-          case "failedRequest":
-            this.logResult = this.singleDataJob.logResults.failedRequest;
-            break;
-          case "skippingData":
-            this.logResult = this.singleDataJob.logResults.skippingData;
-            break;
-          case "updateNotFound":
-            this.logResult =
-              this.singleDataJob.logResults.candleDataNotFoundFromApi;
-            break;
-
-          default:
-            break;
+        console.log('column',column)
+        console.log('this.singleDataJob.logResults[column]',this.singleDataJob.logResults)
+        if(this.singleDataJob.logResults[column] && this.logColumnsConfig[column]){
+          this.columnConfig=this.logColumnsConfig[column]
+          this.logResult = this.singleDataJob.logResults[column]
         }
+
       }
     },
 

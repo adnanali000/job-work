@@ -23,7 +23,7 @@
           <thead>
             <tr>
               <th
-                v-for="(column, i) of columns"
+                v-for="(column, i) of columns.column"
                 :key="i"
                 class="text-sm py-2 text-gray-500 border border-slate-300 ..."
               >
@@ -37,8 +37,13 @@
               :key="i"
               class="text-sm hover:bg-gray-100"
             >
-              <td class="text-green-600 border border-slate-300 p-2 w-[200px] ...">{{ data.Name || 0 }}</td>
-              <td class="text-red-600 border border-slate-300 p-2 w-[200px] ...">{{ data.CandleCount || 0 }}</td>
+              <template v-if="columns.filter === 'string'">
+                <td class="text-green-600 border border-slate-300 p-2 w-[200px] ...">{{ data }}</td>
+              </template>
+              <template v-else>
+                <td class="text-green-600 border border-slate-300 p-2 w-[200px] ...">{{ data.Name || 0 }}</td>
+                <td class="text-red-600 border border-slate-300 p-2 w-[200px] ...">{{ data.CandleCount || 0 }}</td>
+              </template>
             </tr>
           </tbody>
         </table>
@@ -53,15 +58,11 @@
 
 export default {
 
-  props:["singleDataJob","logResult"],
+  props:["singleDataJob","logResult","columns"],
 
   data() {
     return {
-      search: "",
-        columns: [
-          "Name",
-          "Candle Count",
-        ],
+      search: ""
     };
 
     // console.log(this.logResult)
@@ -69,9 +70,15 @@ export default {
  
   computed: {
         filteredData: function() {
-            return this.logResult.filter(data => {
-              return data.Name.match(this.search.toUpperCase());
-            });
+          // console.log('search results',filters)
+          return this.logResult.filter(data => {
+            // console.log('data',data)
+            let searchVar = this.search.toUpperCase();
+            return this.columns.filter ?
+                    this.columns.filter === 'string' ? data.match(searchVar) :
+                            data[this.columns.filter].match(searchVar)
+                    : false;
+          });
           }
     }
 
