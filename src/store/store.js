@@ -18,7 +18,14 @@ export const store = new Vuex.Store({
         DELETE_JOBDATA: (state,id) => {
             let newList = state.jobData.filter(x => x.id !== id)
             state.jobData = newList
-        }
+        },
+
+        DELETE_DATA_JOB_LOG: (state,id) => {
+          let newList = state.datajoblog.filter(x => x.id !== id)
+          state.datajoblog = newList
+      },
+
+
     },
 
     actions:{
@@ -28,7 +35,7 @@ export const store = new Vuex.Store({
 
       setDataJob(context,payload){
         this.state.datajoblog = payload
-        console.log(this.state.datajoblog)
+        // console.log(this.state.datajoblog)
       }
     },
 

@@ -299,7 +299,7 @@
 <script>
 import marketsData from "@/config/marketData";
 import validation from "./validation.vue";
-import { Config } from "./jobConfig";
+import { Config } from "../config/jobConfig";
 import moment from 'moment'
 import {serverApi} from '../api/jobapi' 
 

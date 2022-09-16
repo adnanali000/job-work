@@ -1,6 +1,6 @@
 <template>
   <div>
-      <div class="w-[95%] flex justify-end items-center">
+      <div class="w-[93%] flex justify-end items-center">
         <label class="relative block">
           <span class="sr-only">Search</span>
           <span class="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -15,7 +15,8 @@
           />
         </label>
       </div>
-      <div class="w-full overflow-x-hidden h-[20rem] overflow-visible  mt-2">
+
+      <div class="w-full overflow-x-hidden h-[20rem] overflow-visible  mt-2 scrollbar">
         <table
           class="w-[90%] text-center mx-auto  border-collapse border border-slate-400 .."
         >
@@ -63,7 +64,7 @@ export default {
         ],
     };
 
-    console.log(this.logResult)
+    // console.log(this.logResult)
   },
  
   computed: {
@@ -77,4 +78,18 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+  .scrollbar::-webkit-scrollbar{
+    width: 12px;
+  }
+  .scrollbar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px gray; 
+    border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    height: 50px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 10px gray; 
+}
+</style>

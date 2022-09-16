@@ -51,7 +51,7 @@
             </td>
             
             <td
-              class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
+              class="text-red-600 text-gray-500 border border-slate-300 p-2 ..."
             >
               {{ data.status }}
             </td>
@@ -61,7 +61,7 @@
               {{ data.jobTime }}
             </td>
             <td
-              class="text-green-600 text-gray-500 border border-slate-300 p-2 ..."
+              class="text-red-600 text-gray-500 border border-slate-300 p-2 ..."
               >
               {{ data.lastRunAt }}
             </td>
@@ -152,7 +152,7 @@
 <script>
 import jobMixin from "../mixins/jobSearch";
 import { mapActions, mapGetters } from "vuex";
-import { Config } from "./jobConfig";
+import { Config } from "../config/jobConfig";
 import moment from "moment";
 import marketData from '../config/marketData'
 import {serverApi} from '../api/jobapi' 

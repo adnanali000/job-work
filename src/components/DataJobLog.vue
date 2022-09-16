@@ -10,9 +10,7 @@
     >
       <div class="relative p-4 w-full mx-auto max-w-2xl h-full md:h-auto">
         <!-- Modal content -->
-        <div
-          class="relative bg-white rounded-lg shadow dark:bg-gray-700"
-        >
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <!-- Modal header -->
           <div
             class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600"
@@ -122,6 +120,9 @@
                 <td class="text-red-600 border border-slate-300 p-2 ...">
                   {{ data.jobTime || 0 }}
                 </td>
+                <td class="text-green-600 border border-slate-300 p-2 ...">
+                  {{ data.lastRunAt|| 0 }}
+                </td>
                 <td class="border border-slate-300 p-2 ...">
                   <div class="flex flex-column justify-center items-center">
                     <button
@@ -198,10 +199,10 @@
         </div>
       </div>
 
-     <div v-else>
-      <Spinner />
-     </div>
-
+      <div v-else>
+        <Spinner />
+      </div>
+    
     </div>
   </div>
 </template>
@@ -213,7 +214,7 @@ import marketData from "../config/marketData";
 import moment from "moment";
 import DataJobDetail from "./DataJobDetail.vue";
 import { serverApi } from "../api/jobapi";
-import Spinner from './spinner.vue'
+import Spinner from "./spinner.vue";
 
 const apiUrl = serverApi;
 
@@ -221,7 +222,7 @@ export default {
   components: {
     DataJobDetail,
     Spinner,
-},
+  },
   data() {
     return {
       isResponse: false,
@@ -239,6 +240,7 @@ export default {
         "Skipping Data",
         "Update Not Found",
         "JobTime",
+        "LastRun",
         "Action",
       ],
     };
@@ -254,9 +256,7 @@ export default {
 
   methods: {
     ViewJobDetail(item, column) {
-      // this.$router.push(`/datajobdetail/${data.id}`)
       this.isModal = true;
-      // console.log(item," ",column)
       this.singleDataJob = this.datajoblog.find((x) => x.id == item.id);
 
       if (this.singleDataJob) {
@@ -285,8 +285,14 @@ export default {
       this.isModal = false;
     },
 
-    handleDelete(item) {
-      alert(item.id);
+    async handleDelete(item) {
+      await fetch(`${apiUrl}/admin/deleteDataJob:id?id=${item.id}`, {
+        method: "POST",
+      }).then((response) => {
+        if (!response.isError) {
+          this.$store.commit("DELETE_DATA_JOB_LOG", item.id);
+        }
+      });
     },
 
     displayTime(time) {
@@ -329,7 +335,7 @@ export default {
         .then((item) => {
           this.setDataJob(item.data.list);
           this.setPages();
-          this.isResponse = true
+          this.isResponse = true;
         });
     },
   },

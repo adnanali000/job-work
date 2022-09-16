@@ -34,7 +34,7 @@ data(){
       return {
         navBar:[
           {path:'/',desc:'Create Job'},
-          {path:'/viewjobs',desc:'All Jobs'},
+          {path:'/alljobs',desc:'All Jobs'},
           {path:'/datajoblog', desc: 'Data Job'}
         ]
       }
