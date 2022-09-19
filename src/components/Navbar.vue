@@ -7,7 +7,7 @@
     </a>
     
     <nav class="md:ml-auto flex flex-wrap cursor-pointer items-center text-base justify-center">
-      <a @click="goto(nav.path)" class="mr-5 hover:text-gray-900" v-for="(nav,i) of navBar" :key="i">{{nav.desc}}</a>
+      <a @click.prevent="goto(nav.path)" class="mr-5 hover:text-gray-900" v-for="(nav,i) of navBar" :key="i">{{nav.desc}}</a>
     </nav>
     
     <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
@@ -32,8 +32,9 @@
     },
 data(){
       return {
+        selected:'',
         navBar:[
-          {path:'/',desc:'Create Job'},
+          {path:'/job/new',desc:'Create Job'},
           {path:'/alljobs',desc:'All Jobs'},
           {path:'/datajoblog', desc: 'Data Job'}
         ]
@@ -41,7 +42,12 @@ data(){
 },
   methods:{
     goto(path){
-     this.$router.push(path)
+      if(this.selected !== path){
+        this.selected = path
+        // this.$router.find(path)
+        this.$router.push(path)
+      }
+
     }
   }
   

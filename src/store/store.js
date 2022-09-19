@@ -6,12 +6,8 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
     state: {
           jobData: [],
-
+          selectedJob:null,
           datajoblog: []
-
-
-
-
     },
 
     mutations:{
@@ -24,6 +20,9 @@ export const store = new Vuex.Store({
           let newList = state.datajoblog.filter(x => x.id !== id)
           state.datajoblog = newList
       },
+        SELECTED_JOB_DATA: (state,job) => {
+            state.selectedJob = job
+        },
 
 
     },
@@ -42,6 +41,7 @@ export const store = new Vuex.Store({
     getters:{
 
         jobData: state => state.jobData,
+        selectedJobInStore: state => state.selectedJob,
 
         datajoblog: state => state.datajoblog
     }

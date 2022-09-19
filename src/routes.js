@@ -4,9 +4,10 @@ import DataJob from './components/DataJobLog'
 
 export default [
     
-    { path: "/", component: JobForm  
-        // children:[{ path: "/jobs", component: table2},]
-    },
+    { path: "/job/:id", component: JobForm  , props: route => {
+            console.log('route.params',route.params)
+            return { id: route.params.id === 'new' ?  null : route.params.id }
+        }},
 
     { path: "/alljobs", component: JobTable },
     {path: "/datajoblog",component: DataJob},

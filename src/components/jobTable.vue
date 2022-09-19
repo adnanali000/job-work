@@ -69,6 +69,12 @@
             <td class="border border-slate-300 p-2 ...">
               <div class="flex flex-column justify-center items-center">
                 <button
+                        @click="editJob(data)"
+                        class="button border border-solid border-green-400 hover:bg-red-500 hover:text-white p-2 my-2 mx-1"
+                >
+                  Edit
+                </button>
+                <button
                   @click="handleDelete(data)"
                   class="button border border-solid border-red-400 hover:bg-red-500 hover:text-white p-2 my-2"
                 >
@@ -151,7 +157,7 @@
 
 <script>
 import jobMixin from "../mixins/jobSearch";
-import { mapActions, mapGetters } from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 import { Config } from "../config/jobConfig";
 import moment from "moment";
 import marketData from '../config/marketData'
@@ -186,6 +192,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["SELECTED_JOB_DATA"]),
     displayOccurrence(val) {
       let curobj = Config.occurrenceType.find((v) => v.id === val.occurrence);
       let day = Config.weeklyDay.find((v) => v.id === val.weekDay);
@@ -197,12 +204,12 @@ export default {
               " on " +
               day.desc +
               " at " +
-              moment(val.jobTime).format("hh:mm")
+              moment(val.jobTime).format("HH:mm")
           : "";
       }
       if (val.occurrence === "D") {
         return curobj
-          ? curobj.desc + " at " + moment(val.jobTime).format("hh:mm")
+          ? curobj.desc + " at " + moment(val.jobTime).format("HH:mm")
           : "";
       }
       if (val.occurrence === "M") {
@@ -210,7 +217,7 @@ export default {
           ? "Monthly on " +
               month.desc +
               " at " +
-              moment(val.jobTime).format("hh:mm")
+              moment(val.jobTime).format("HH:mm")
           : "";
       }
     },
@@ -222,8 +229,13 @@ export default {
 
         },
 
+    async editJob(item) {
+      console.log(item)
+      this.SELECTED_JOB_DATA(item)
+      this.$router.push(`job/${item.id}`).then(r => console.log(r))
+    },
     async handleDelete(item) {
-      await fetch(`${apiUrl}/admin/deleteJob:id?id=${item.id}`, { 
+      await fetch(`${apiUrl}/admin/deleteJob:id?id=${item.id}`, {
         method: "POST" 
       })
       .then((response) => {

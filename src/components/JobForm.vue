@@ -1,10 +1,11 @@
 <template>
   <div class="h-auto">
     <form
+            v-if="isResponse"
       class="w-full max-w-sm mt-12 mx-auto border border-solid py-10 px-6 shadow-md rounded-lg"
     >
       <h2 class="text-gray-600 text-xl mb-1 font-medium title-font border-b-2">
-        Job Form
+        {{formTitle}}
       </h2>
       <div class="md:flex md:items-center mb-4 pt-6">
         <div class="md:w-1/3">
@@ -288,11 +289,29 @@
             class="shadow bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
             type="button"
           >
-            Create Job
+            {{isEdit ? 'Update Job' : 'Create Job'}}
+          </button>
+
+        </div>
+
+      </div>
+      <div class="md:flex md:items-center md:justify-end mt-3" v-if="false">
+        <div class="md:w-2/3">
+          <button
+                  @click="removeLAst"
+                  class="shadow bg-red-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                  type="button"
+          >
+            {{Remove}}
           </button>
         </div>
       </div>
+
     </form>
+
+    <div v-else>
+      <Spinner />
+    </div>
   </div>
 </template>
 
@@ -301,18 +320,29 @@ import marketsData from "@/config/marketData";
 import validation from "./validation.vue";
 import { Config } from "../config/jobConfig";
 import moment from 'moment'
-import {serverApi} from '../api/jobapi' 
+import {serverApi} from '../api/jobapi'
+import {mapGetters} from "vuex";
+import Spinner from "./spinner"
 
 const apiUrl = serverApi
 
 
 export default {
   components: {
-    validation,
+    validation,Spinner
+  },
+  props:{
+    id:{
+      type:String
+    }
   },
   data() {
     return {
       ...Config,
+      isResponse:false,
+      isEdit:false,
+      formTitle:"",
+      Remove:"Remove",
       jobConfig: {
         occurrence: "",
         weekDay: "",
@@ -332,17 +362,61 @@ export default {
       selectedSymbols: [],
       symbolList: [],
       allSymbols: [],
-      selectedJob: "Choose Job",
-      selectedCode: "Choose code",
       marketsData: marketsData,
     };
   },
   async mounted() {
-    const rawResponse = await fetch(`${apiUrl}/symbols`);
-    const content = await rawResponse.json();
-    this.allSymbols = content.data;
+
+    fetch(`${apiUrl}/symbols`).then(res => res.json())
+    .then( (content) => {
+      this.allSymbols = content.data;
+      this.isResponse = true;
+      console.log('this.data.id',this.$props.id)
+      if(this.$props.id && this.selectedJobInStore){
+        this.formTitle = "Edit Job Form"
+        this.isEdit = true
+        console.log('map data',this.selectedJobInStore.jobTime)
+        this.jobConfig.jobType = this.selectedJobInStore.jobType
+        this.jobConfig.occurrence = this.selectedJobInStore.occurrence
+        this.marketIdComputed = this.selectedJobInStore.marketId
+        let formatDate = moment(this.selectedJobInStore.jobTime).format("HH:mm");
+        console.log('this.selectedJobInStore.jobTime',formatDate)
+        this.jobConfig.jobTime = formatDate
+        if(this.selectedJobInStore.symbolList){
+          this.selectedSymbols = this.selectedJobInStore.symbolList.split(";").filter(d => {
+            if(d && d.length > 0){
+              return d
+            }else{
+              return false;
+            }
+          })
+        }
+      }else{
+        this.isEdit = false
+        this.formTitle = "Job Form"
+      }
+    });
+    // const content = await rawResponse.json();
+
   },
   methods: {
+    async removeLAst(){
+      if(this.selectedSymbols.length > 0){
+        let c =  this.selectedSymbols.join(";").concat(";");
+        this.Remove = "Removing"
+        const rawResponse = await fetch(`${apiUrl}/symbols/remove-last-five?symbols=${c}`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          }
+        });
+        let res = await rawResponse.json();
+        console.log(res)
+        this.Remove = "Remove"
+      }
+
+    },
     async handleJob() {
       let isNotValid = false;
       if (this.jobConfig.occurrence == "") {
@@ -397,14 +471,17 @@ export default {
           let jobTime = date.utc().unix();
           console.log('jobTime',jobTime,date)
           dataObj.jobTime = jobTime;
-          
+
           // console.log(moment().utcOffset() / 60);
 
           // 2022-09-13T22:30:00Z
 
           // console.log(new Date().getTimezoneOffset())
-        
-          const rawResponse = await fetch(`${apiUrl}/admin/saveCustomJobs`, {
+          if(this.isEdit){
+            dataObj.jobId = this.$props.id
+          }
+          let url = this.isEdit ? `/admin/updateCustomJobs` : `/admin/saveCustomJobs`;
+          const rawResponse = await fetch(`${apiUrl}${url}`, {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -414,7 +491,7 @@ export default {
           });
           let res = await rawResponse.json();
           if (!res.isError) {
-            this.$router.go();
+            this.$router.back();
           }
         }
       }
@@ -422,6 +499,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["selectedJobInStore"]),
     marketIdComputed: {
       set(value) {
         this.jobConfig.marketId = value;
